@@ -6,6 +6,7 @@
   <style>
     body {
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
@@ -13,21 +14,78 @@
       background: black;
       color: white;
       font-family: monospace;
+      transition: background 0.3s, color 0.3s;
+    }
+    #clock {
       font-size: 12vw;
+    }
+    .controls {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button {
+      padding: 5px 10px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.2);
+      color: inherit;
+    }
+    button:hover {
+      background: rgba(255,255,255,0.4);
     }
   </style>
 </head>
 <body>
   <div id="clock"></div>
 
+  <div class="controls">
+    <button onclick="toggleBackground()">Toggle Background</button>
+    <button onclick="toggleFormat()">Toggle 12/24 hr</button>
+  </div>
+
   <script>
+    let is24hr = true;
+    let isDark = true;
+
     function updateClock() {
       const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
+      let hours = now.getHours();
+      let suffix = "";
+
+      if (!is24hr) {
+        suffix = hours >= 12 ? " PM" : " AM";
+        hours = hours % 12 || 12; // convert to 12hr
+      }
+
+      const h = String(hours).padStart(2, '0');
       const m = String(now.getMinutes()).padStart(2, '0');
       const s = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById('clock').textContent = `${h}:${m}:${s}`;
+
+      document.getElementById('clock').textContent = `${h}:${m}:${s}${suffix}`;
     }
+
+    function toggleBackground() {
+      isDark = !isDark;
+      if (isDark) {
+        document.body.style.background = "black";
+        document.body.style.color = "white";
+      } else {
+        document.body.style.background = "white";
+        document.body.style.color = "black";
+      }
+    }
+
+    function toggleFormat() {
+      is24hr = !is24hr;
+      updateClock();
+    }
+
     setInterval(updateClock, 1000);
     updateClock();
   </script>
